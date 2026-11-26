@@ -270,7 +270,7 @@
 
 <div id="main-wrap">
   <div class="header">
-    <h1><a href="https://gitdownload.macosxjs.com">DownGit</a></h1>
+    <h1><a href="https://minhaskamal.github.io/DownGit">DownGit</a></h1>
     <p>Create GitHub Directory Download Link</p>
   </div>
 
@@ -401,6 +401,22 @@
     return null;
   }
 
+  function buildShareUrl(rawUrl) {
+    const u = new URL(window.location.href);
+    u.searchParams.set("url", rawUrl);
+    return u.toString();
+  }
+
+  function syncLocationUrl(rawUrl) {
+    const shareUrl = buildShareUrl(rawUrl);
+    try {
+      window.history.replaceState(null, "", shareUrl);
+    } catch (e) {
+      try { window.location.search = "?url=" + encodeURIComponent(rawUrl); } catch (e2) {}
+    }
+    return shareUrl;
+  }
+
   async function ghJson(url) {
     const res = await fetch(url, {
       headers: { Accept: "application/vnd.github+json" }
@@ -433,8 +449,7 @@
       return;
     }
 
-    const base = window.location.origin + window.location.pathname;
-    const shareUrl = base + "?url=" + encodeURIComponent(rawUrl);
+    const shareUrl = syncLocationUrl(rawUrl);
     downUrlEl.value = shareUrl;
     linkBox.classList.add("show");
     setStatus("Download link generated.");
@@ -451,6 +466,7 @@
       return;
     }
 
+    syncLocationUrl(rawUrl);
     createBtn.disabled = true;
     downloadBtn.disabled = true;
 
@@ -570,12 +586,16 @@
     if (val) window.open(val, "_blank", "noopener,noreferrer");
   });
 
-  // Auto-trigger download if ?url= query parameter is present
+  // Auto-trigger download if ?url= query parameter is present and valid
   const params = new URLSearchParams(window.location.search);
   const initialUrl = params.get("url");
   if (initialUrl) {
     urlEl.value = initialUrl;
-    downloadResource();
+    if (parseGitHubUrl(initialUrl)) {
+      downloadResource();
+    } else {
+      showError("Invalid GitHub URL in ?url= parameter. Use https://github.com/owner/repo or a /tree/ or /blob/ link.");
+    }
   }
 })();
 </script>
