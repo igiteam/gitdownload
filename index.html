@@ -1,43 +1,583 @@
 <!DOCTYPE html>
-<html ng-app="downGit">
+<html lang="en">
 <head>
-    
-    <!-------------------------------- META -------------------------------->
-    
-    <meta charset="utf-8"/>
-    <meta name="keywords" content="GitHub Directory Link, GitHub Directory, Github Link, GitHub Directory Download, GitHub, Download"/>
-    <meta name="description" content="Create GitHub Directory Download Link"/>
-    <meta name="author" content="Minhas Kamal"/>
-    
-    
-    <title>DownGit</title>
-    <link rel="icon" type="image/ico" href="res/images/downgit.png">
-    
-    
-    <!-------------------------------- LINK -------------------------------->
-    
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" />
-    <link href="lib/angular-toastr(2.0.0).min.css" rel="stylesheet"/>
-    
-    <link href="app/site.css" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Prevent browsers and intermediary caches from storing this page -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<title>DownGit</title>
+<meta name="keywords" content="GitHub Directory Link, GitHub Directory, Github Link, GitHub Directory Download, GitHub, Download">
+<meta name="description" content="Create GitHub Directory Download Link">
+<meta name="theme-color" content="#0d1117">
+
+<!-- Favicon / Icon -->
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/igiteam/gitdownload/refs/heads/master/res/images/downgit.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/igiteam/gitdownload/refs/heads/master/res/images/downgit.png">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="DownGit">
+<meta property="og:description" content="Create GitHub Directory Download Link">
+<meta property="og:image" content="https://raw.githubusercontent.com/igiteam/gitdownload/refs/heads/master/res/images/downgit.png">
+<meta property="og:image:alt" content="DownGit icon">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DownGit">
+<meta name="twitter:description" content="Create GitHub Directory Download Link">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/igiteam/gitdownload/refs/heads/master/res/images/downgit.png">
+<meta name="twitter:image:alt" content="DownGit icon">
+
+<style>
+  :root { color-scheme: light dark; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background: #fff;
+    color: #111;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0d1117; color: #e6edf3; }
+    #bar { background: #161b22; border-color: #30363d; }
+    #bar input { background: #0d1117; color: #e6edf3; border-color: #30363d; }
+    #bar button { background: #21262d; color: #e6edf3; border-color: #30363d; }
+    #bar button:hover { background: #30363d; }
+    #bar button.on { background: #238636; border-color: #2ea043; color: #fff; }
+    #bar button:disabled { opacity: 0.4; cursor: default; background: #21262d; }
+    #status { color: #8b949e; }
+    .box { background: #161b22; border-color: #30363d; }
+    .box textarea { background: #0d1117; color: #e6edf3; border-color: #30363d; }
+    .box button { background: #21262d; color: #e6edf3; border-color: #30363d; }
+    .box button:hover { background: #30363d; }
+  }
+
+  /* ---- top bar: horizontally scrollable on overflow ---- */
+  #bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    padding: 6px 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  #bar > * { flex: 0 0 auto; }
+  #bar input {
+    font: inherit;
+    padding: 3px 6px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    flex: 1 1 480px;
+    min-width: 480px;
+    max-width: none;
+  }
+  #bar button {
+    font: inherit;
+    padding: 3px 10px;
+    border: 1px solid #bbb;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  #bar button:hover { background: #eee; }
+  #bar button.on { background: #1a7f37; border-color: #1a7f37; color: #fff; }
+  #bar button:disabled { opacity: 0.4; cursor: default; background: #fff; }
+  #bar button:disabled:hover { background: #fff; }
+  #bar button.flash { background: #238636; border-color: #2ea043; color: #fff; }
+  @media (prefers-color-scheme: dark) {
+    #bar button:disabled { background: #21262d; }
+    #bar button:disabled:hover { background: #21262d; }
+  }
+
+  /* ---- responsive widths ---- */
+  @media (min-width: 1100px) {
+    #bar input { flex: 1 1 640px; min-width: 640px; }
+  }
+  @media (max-width: 1099px) and (min-width: 769px) {
+    #bar input { flex: 1 1 420px; min-width: 420px; }
+  }
+  @media (max-width: 768px) and (min-width: 501px) {
+    #bar input { flex: 1 1 260px; min-width: 260px; }
+  }
+  @media (max-width: 500px) {
+    #bar { padding: 5px 6px; gap: 6px; }
+    #bar input { flex: 1 1 180px; min-width: 180px; }
+    #bar button { padding: 3px 8px; }
+  }
+  @media (max-width: 340px) {
+    #bar input { flex: 1 1 140px; min-width: 140px; }
+    #bar button { padding: 3px 7px; font-size: 11px; }
+  }
+
+  #status { padding: 6px 8px; color: #666; font-size: 12px; }
+  #status:empty { display: none; }
+
+  #main-wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px 32px 64px;
+  }
+  @media (max-width: 500px) {
+    #main-wrap { padding: 16px 14px 48px; }
+  }
+
+  .header {
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .header h1 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .header h1 a:hover {
+    text-decoration: underline;
+  }
+  .header p {
+    margin: 0;
+    color: #666;
+    font-size: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .header p { color: #8b949e; }
+  }
+
+  .box {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .box-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .box textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    font-size: 12px;
+    padding: 8px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    background: #fff;
+    color: #111;
+    resize: vertical;
+    min-height: 64px;
+  }
+  .box-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  .box button {
+    font: inherit;
+    font-size: 12px;
+    padding: 4px 10px;
+    border: 1px solid #bbb;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .box button:hover { background: #eee; }
+  .box button.flash { background: #238636; border-color: #2ea043; color: #fff; }
+
+  #progress-box {
+    display: none;
+  }
+  #progress-box.show {
+    display: block;
+  }
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: #d0d7de;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .progress-track { background: #30363d; }
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #1a7f37;
+    transition: width 0.15s ease;
+  }
+  @media (prefers-color-scheme: dark) {
+    .progress-fill { background: #238636; }
+  }
+
+  #link-box {
+    display: none;
+  }
+  #link-box.show {
+    display: block;
+  }
+
+  #error {
+    display: none;
+    max-width: 980px;
+    margin: 24px auto;
+    padding: 12px 16px;
+    background: #ffebe9;
+    border: 1px solid #ff818266;
+    border-radius: 6px;
+    color: #cf222e;
+    white-space: pre-wrap;
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+  }
+  #error.show { display: block; }
+  @media (prefers-color-scheme: dark) {
+    #error { background: #3d1d1d; border-color: #f85149; color: #ffa198; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
-    
-    <div ng-view class=""></div>
-    
-    
-    <!------------------------------- SCRIPT ------------------------------>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script src="lib/angular-toastr(2.0.0).tpls.min.js"></script>
-    <script src="https://cdn.rawgit.com/Stuk/jszip/v3.0.0/dist/jszip.min.js"></script>
-    <script src="lib/filesaver.min.js"></script>
 
-    <script src="app/app.js"></script>
-    <script src="app/home/home.js"></script>
-    <script src="app/home/down-git.js"></script>
+<div id="bar">
+  <input id="url" type="url"
+         placeholder="GitHub File or Directory Link (e.g. https://github.com/owner/repo/tree/main/dir)" />
+  <button id="create-link">Create Download Link</button>
+  <button id="download" class="on">Download</button>
+</div>
+<div id="status"></div>
+<div id="error"></div>
+
+<div id="main-wrap">
+  <div class="header">
+    <h1><a href="https://gitdownload.macosxjs.com">DownGit</a></h1>
+    <p>Create GitHub Directory Download Link</p>
+  </div>
+
+  <div id="progress-box" class="box">
+    <div id="progress-text">Downloaded 0 of 0 files</div>
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+  </div>
+
+  <div id="link-box" class="box">
+    <label class="box-label" for="down-url">Download Link</label>
+    <textarea id="down-url" readonly></textarea>
+    <div class="box-actions">
+      <button id="copy-link">Copy Link</button>
+      <button id="open-link">Open ↗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const GITHUB_API = "https://api.github.com";
+  const RAW_BASE   = "https://raw.githubusercontent.com";
+
+  const urlEl        = document.getElementById("url");
+  const createBtn    = document.getElementById("create-link");
+  const downloadBtn  = document.getElementById("download");
+  const statusEl     = document.getElementById("status");
+  const errorEl      = document.getElementById("error");
+  const progressBox  = document.getElementById("progress-box");
+  const progressText = document.getElementById("progress-text");
+  const progressFill = document.getElementById("progress-fill");
+  const linkBox      = document.getElementById("link-box");
+  const downUrlEl    = document.getElementById("down-url");
+  const copyLinkBtn  = document.getElementById("copy-link");
+  const openLinkBtn  = document.getElementById("open-link");
+
+  function setStatus(msg) {
+    statusEl.textContent = msg || "";
+  }
+
+  function showError(msg) {
+    errorEl.textContent = "⚠ " + msg;
+    errorEl.classList.add("show");
+  }
+
+  function clearError() {
+    errorEl.textContent = "";
+    errorEl.classList.remove("show");
+  }
+
+  function setProgress(downloaded, total) {
+    progressBox.classList.add("show");
+    progressText.textContent = "Downloaded " + downloaded + " of " + total + " files";
+    const pct = total > 0 ? Math.round((downloaded / total) * 100) : 0;
+    progressFill.style.width = pct + "%";
+  }
+
+  function hideProgress() {
+    progressBox.classList.remove("show");
+    progressFill.style.width = "0%";
+  }
+
+  function flash(btn, text) {
+    const original = btn.textContent;
+    btn.textContent = text;
+    btn.classList.add("flash");
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove("flash");
+    }, 1200);
+  }
+
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+    }
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function parseGitHubUrl(rawUrl) {
+    const input = (rawUrl || "").trim();
+    if (!input) return null;
+
+    let u;
+    try { u = new URL(input); } catch (e) { return null; }
+
+    if (!/^github\.com$/i.test(u.hostname)) return null;
+
+    const parts = u.pathname.split("/").filter(Boolean).map(decodeURIComponent);
+    if (parts.length < 2) return null;
+
+    const owner = parts[0];
+    const repo  = parts[1].replace(/\.git$/, "");
+
+    if (parts.length === 2) {
+      return { owner, repo, type: "repo", branch: null, path: "" };
+    }
+
+    const kind = parts[2];
+    if ((kind === "tree" || kind === "blob") && parts.length >= 4) {
+      return {
+        owner,
+        repo,
+        type: kind,
+        branch: parts[3],
+        path: parts.slice(4).join("/")
+      };
+    }
+
+    return null;
+  }
+
+  async function ghJson(url) {
+    const res = await fetch(url, {
+      headers: { Accept: "application/vnd.github+json" }
+    });
+    if (res.status === 404) throw new Error("Resource not found: " + url);
+    if (res.status === 403) throw new Error("GitHub API rate limit exceeded. Try again later.");
+    if (!res.ok) throw new Error("GitHub API error: HTTP " + res.status);
+    return res.json();
+  }
+
+  function triggerBrowserDownload(blob, filename) {
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 5000);
+  }
+
+  function createDownloadLink() {
+    clearError();
+    hideProgress();
+    const rawUrl = urlEl.value.trim();
+    const parsed = parseGitHubUrl(rawUrl);
+    if (!parsed) {
+      linkBox.classList.remove("show");
+      showError("Invalid GitHub URL. Use https://github.com/owner/repo or a /tree/ or /blob/ link.");
+      return;
+    }
+
+    const base = window.location.origin + window.location.pathname;
+    const shareUrl = base + "?url=" + encodeURIComponent(rawUrl);
+    downUrlEl.value = shareUrl;
+    linkBox.classList.add("show");
+    setStatus("Download link generated.");
+  }
+
+  async function downloadResource() {
+    clearError();
+    linkBox.classList.remove("show");
+    const rawUrl = urlEl.value.trim();
+    const parsed = parseGitHubUrl(rawUrl);
+
+    if (!parsed) {
+      showError("Invalid GitHub URL. Use https://github.com/owner/repo or a /tree/ or /blob/ link.");
+      return;
+    }
+
+    createBtn.disabled = true;
+    downloadBtn.disabled = true;
+
+    try {
+      setStatus("Resolving repository info…");
+      let branch = parsed.branch;
+      if (!branch) {
+        const repoInfo = await ghJson(GITHUB_API + "/repos/" + parsed.owner + "/" + parsed.repo);
+        branch = repoInfo.default_branch || "main";
+      }
+
+      // Single file download
+      if (parsed.type === "blob" && parsed.path) {
+        setProgress(0, 1);
+        setStatus("Downloading file…");
+        const encodedPath = parsed.path.split("/").map(encodeURIComponent).join("/");
+        const fileUrl = RAW_BASE + "/" + parsed.owner + "/" + parsed.repo + "/" + encodeURIComponent(branch) + "/" + encodedPath;
+        const res = await fetch(fileUrl);
+        if (!res.ok) throw new Error("Failed to fetch file: HTTP " + res.status);
+        const blob = await res.blob();
+        const fileName = parsed.path.split("/").pop() || "download";
+        setProgress(1, 1);
+        triggerBrowserDownload(blob, fileName);
+        setStatus("Download complete.");
+        return;
+      }
+
+      // Directory or full repository download as ZIP
+      setStatus("Fetching directory tree…");
+      const treeUrl = GITHUB_API + "/repos/" + parsed.owner + "/" + parsed.repo + "/git/trees/" + encodeURIComponent(branch) + "?recursive=1";
+      const treeData = await ghJson(treeUrl);
+
+      if (!treeData.tree) {
+        throw new Error("Unable to read repository file tree.");
+      }
+
+      const prefix = parsed.path ? parsed.path.replace(/\/+$/, "") + "/" : "";
+      const files = treeData.tree.filter(function (item) {
+        if (item.type !== "blob") return false;
+        if (!prefix) return true;
+        return item.path.startsWith(prefix);
+      });
+
+      if (files.length === 0) {
+        throw new Error("No files found at the specified GitHub path.");
+      }
+
+      const zip = new JSZip();
+      const total = files.length;
+      let completed = 0;
+      setProgress(0, total);
+      setStatus("Packaging " + total + " file(s)…");
+
+      const CONCURRENCY = 6;
+      let index = 0;
+
+      async function worker() {
+        while (index < total) {
+          const file = files[index++];
+          const encodedPath = file.path.split("/").map(encodeURIComponent).join("/");
+          const rawFileUrl = RAW_BASE + "/" + parsed.owner + "/" + parsed.repo + "/" + encodeURIComponent(branch) + "/" + encodedPath;
+          const res = await fetch(rawFileUrl);
+          if (!res.ok) {
+            throw new Error("Failed downloading " + file.path + " (HTTP " + res.status + ")");
+          }
+          const buffer = await res.arrayBuffer();
+          const relativePath = prefix ? file.path.slice(prefix.length) : file.path;
+          zip.file(relativePath, buffer);
+          completed++;
+          setProgress(completed, total);
+        }
+      }
+
+      const workers = [];
+      for (let i = 0; i < Math.min(CONCURRENCY, total); i++) {
+        workers.push(worker());
+      }
+      await Promise.all(workers);
+
+      setStatus("Compressing ZIP archive…");
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const zipName = (parsed.path ? parsed.path.split("/").pop() : parsed.repo) + ".zip";
+      triggerBrowserDownload(zipBlob, zipName);
+      setStatus("Download complete.");
+    } catch (err) {
+      console.error(err);
+      setStatus("");
+      showError(err.message || String(err));
+    } finally {
+      createBtn.disabled = false;
+      downloadBtn.disabled = false;
+    }
+  }
+
+  createBtn.addEventListener("click", createDownloadLink);
+  downloadBtn.addEventListener("click", downloadResource);
+
+  urlEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      downloadResource();
+    }
+  });
+
+  copyLinkBtn.addEventListener("click", async function () {
+    const val = downUrlEl.value;
+    if (!val) return;
+    const ok = await copyText(val);
+    if (ok) {
+      flash(copyLinkBtn, "Copied!");
+    } else {
+      window.prompt("Copy this URL:", val);
+    }
+  });
+
+  openLinkBtn.addEventListener("click", function () {
+    const val = downUrlEl.value;
+    if (val) window.open(val, "_blank", "noopener,noreferrer");
+  });
+
+  // Auto-trigger download if ?url= query parameter is present
+  const params = new URLSearchParams(window.location.search);
+  const initialUrl = params.get("url");
+  if (initialUrl) {
+    urlEl.value = initialUrl;
+    downloadResource();
+  }
+})();
+</script>
 </body>
 </html>
